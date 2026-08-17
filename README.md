@@ -1,6 +1,5 @@
 # midgutChirality
-code for midgut chirality paper
-Folders to be added:
+code for midgut chirality paper. Folders to be added:
 - Smoothing MLX scripts (Meshlab & Python (PyMeshLab)
 - TuBULAR master scripts (MATLAB)
 - Calcium processing scripts (MATLAB)
