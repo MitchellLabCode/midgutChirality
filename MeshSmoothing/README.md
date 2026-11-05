@@ -1,5 +1,3 @@
-Workflow for the smoothing of meshes
-
 # Midgut Surface Mesh Processing
 
 This repository contains Python scripts for post-processing three-dimensional surface meshes of the embryonic *Drosophila* midgut, as used in "Mechanical canalization of chiral gut morphogenesis"
