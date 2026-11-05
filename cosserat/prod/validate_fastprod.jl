@@ -2,7 +2,7 @@
 #
 #   julia validate_fastprod.jl        (or sbatch validate_fastprod.sh)
 #
-# Full prod pipeline on V6 data (walls, self-contact, remeshing, data-driven clamped ends,
+# Full pipeline on V6 data (walls, self-contact, remeshing, data-driven clamped ends,
 # growth, remodeling) for a short simulation time T: the growth rate is rescaled by 1/T,
 # so the whole measured elongation, and the remeshing it triggers, still happens.
 # Compares the saved xsaves / Qsaves of both kernels and times them.
@@ -18,7 +18,7 @@ include("../src/fastkernel.jl")
 include("fastprod.jl")
 include("prod_common.jl")
 
-function prod_bcs(smp, T, L) # verbatim from the prod script
+function prod_bcs(smp, T, L) # clamped, data-driven ends for run_simulation_plastic_remeshed
     x_itp = smp.x_itp
     Q1_itp = smp.Q1_itp
     Qend_itp = smp.Qend_itp
@@ -34,7 +34,7 @@ function prod_bcs(smp, T, L) # verbatim from the prod script
     return bcs
 end
 
-function ext_forces(x, neighbour_walls) # verbatim from the prod script
+function ext_forces(x, neighbour_walls) # wall forces for run_simulation_plastic_remeshed
     f_ext = zeros(size(x, 1), 3)
     N = size(x, 1) - 1
     for i = 2:N

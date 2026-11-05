@@ -1,10 +1,10 @@
 # cosserat
 
-Cosserat-rod growth simulations of the midgut, extracted from `noah/rods`. The folder contains:
+Cosserat-rod growth simulations of the midgut. The folder contains:
 - the source and the reproducible Julia/conda environment spec;
 - the V6 reference data;
 - three sets of runs: the production runs on the measured samples (`prod/`), the
-  canalization runs (`canalization/`), and a minimal version of the tube runs of the S14 rods
+  canalization runs (`canalization/`), and a minimal version of the tube runs of the coil rods
   (`minimal/`).
 
 ## Layout
@@ -42,8 +42,8 @@ cosserat/
 │   ├── precompute_writhe.py   #   Wr vs L/L0 of a sweep -> <folder>/wr_vs_len.mat
 │   ├── plot_canalization_frames.m, plot_tube_canal.m, plot_tube_canal_overlay.m, ...   # MATLAB plots
 │   └── logs/
-└── minimal/                   # S14 rods grown in a tube, hard / free, L = 1.5 and 6, ± noise
-    ├── tube_S14.jl            #   driver; run_L1.5.sh, run_L6.sh
+└── minimal/                   # coil rods grown in a tube, hard / free, L = 1.5 and 6, ± noise
+    ├── tube_coil.jl            #   driver; run_L1.5.sh, run_L6.sh
     ├── tubeplots.py           #   shared plotting helpers (κ²τ, Q measure, 3D tubes)
     ├── plot_wr_vs_L.py, plot_3d.py, plot_perversions.py
     └── README.md              #   parameters, measures and the commands for every figure
@@ -70,18 +70,13 @@ rebuilds the Julia packages from `Manifest.toml` and the python/conda packages f
 ## Environment
 
 Only the environment *spec* files are included (`Project.toml`, `Manifest.toml`,
-`CondaPkg.toml`). The actual installed binaries in `noah/rods` — `src/rods/.CondaPkg/`
-(~1.2 GB) and `noah/rods/env/` (~1.9 GB) — are **not** copied: they are large and contain
-machine-specific absolute paths. They are regenerated automatically by
-`Pkg.instantiate()` + CondaPkg.jl on first run. The Manifest was generated on Julia 1.9.
+`CondaPkg.toml`). The packages are installed automatically by `Pkg.instantiate()` +
+CondaPkg.jl on first run (into `src/rods/.CondaPkg/` and the Julia depot). The Manifest was
+generated on Julia 1.9.
 
-## Not included (results / unused inputs)
+## Not included
 
-To keep the bundle lean, the following from `noah/rods` were intentionally omitted:
-- Dated simulation **output** folders, `.png`/`.pdf` figures, and result `.zip` archives —
-  these are produced by running the sims.
-- `data/meshes_spRS/` (~209 MB). The MATLAB plots of `prod/` and some of `canalization/` draw the
-  measured midgut meshes from it; copy it to `data/meshes_spRS/` to run them.
-- The redundant `SRVbox*.zip` archives (the unzipped `SRVbox*/` dirs are included instead).
-
-If you need `meshes_spRS` or any output folder, copy it from `noah/rods/`.
+- Simulation **output** folders and figures: they are produced by running the scripts.
+- The midgut surface meshes (`data/meshes_spRS/meshes_sample<N>.mat`, ~209 MB). Only the MATLAB
+  plots of `prod/` and `canalization/diagnostic_canalization.m`, `plot_initial_tube.m` and
+  `plot_tube_canal.m` draw them; the simulations and the other plots do not need them.

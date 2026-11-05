@@ -13,7 +13,7 @@ The α = 0 runs (planar without noise) are left out of the lines and the median 
 they still count in the threshold, which is over all runs of the folder.
 
 usage: python plot_perversions.py <folder> [--eta 10] [--thr 2.08e-4] [--xlim 1,4] [--ylim=-0.3,6.3] [--out f.pdf]
-  e.g. python plot_perversions.py 20261020_tube_S14_hard_L6.0 --xlim 1,4 --ylim=-0.3,6.3
+  e.g. python plot_perversions.py 20261020_tube_coil_hard_L6.0 --xlim 1,4 --ylim=-0.3,6.3
 """
 import argparse
 import os

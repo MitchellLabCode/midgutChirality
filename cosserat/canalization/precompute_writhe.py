@@ -1,14 +1,14 @@
 """Writhe vs L/L0 for every run of a canalization folder, for plot_canalization_frames.m.
 
-MATLAB has no writhe routine, so this computes it with the SAME formula the
-canalization notebook uses (measurements._writhe: Klenin & Langowski 2000,
+MATLAB has no writhe routine, so this computes it with the formula of
+../src/measurements.py (measurements._writhe: Klenin & Langowski 2000,
 method 1a, with NaN pair contributions set to 0), vectorized over segment pairs.
 --verify checks the vectorized version against measurements.compute_wr.
 
-Matches the notebook's conventions:
+Conventions:
     tau     parsed from the filename (cutoff01contact_n<k>_tau<tau>.mat)
     alpha   = 1 - 2*tau
-    Wr      every `stride`-th snapshot (notebook: xsaves[::4])
+    Wr      every `stride`-th snapshot (default 4)
     L/L0    summed edge length; positions are in units of the initial length
 
 Also flags the run with an outlying jump in Wr(t) (max |dWr| between
@@ -56,7 +56,7 @@ def main(folder, stride=4, verify=False, jump_factor=5.0):
                    if f.startswith("cutoff") and f.endswith(".mat"))
     tau, wr, ln = [], [], []
     for fn in files:
-        tau.append(float(fn.split("_")[2][3:-4]))          # notebook's parsing
+        tau.append(float(fn.split("_")[2][3:-4]))          # tau from the file name
         with h5py.File(os.path.join(folder, fn), "r") as f:
             xs = np.array(f["xsaves"]).T                    # (nt, N+1, 3)
         xs = xs[::stride]

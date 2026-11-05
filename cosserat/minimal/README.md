@@ -1,6 +1,6 @@
-# minimal: S14 rods grown in a tube
+# minimal: coil rods grown in a tube
 
-Pared-down code for the S14 tube runs: rods grown in a hard-walled tube (R = 0.3 Le) and without
+Pared-down code for the coil tube runs: rods grown in a hard-walled tube (R = 0.3 Le) and without
 confinement, to L/Le = 1.5 and 6, with and without rotational noise. The folder also has the
 plots of those runs.
 
@@ -9,18 +9,14 @@ Each run grows an overdamped Cosserat rod, clamped at both ends, from L0 = 1.05 
 - self-contact;
 - remeshing.
 
-The initial shape is the lowest clamped pair (S14) at initial asymmetry α ∈ [−1, 1], where
+The initial shape, the coil, is the lowest clamped pair at initial asymmetry α ∈ [−1, 1], where
 α = 0 is planar and α = ±1 are mirror images.
-
-`tube_S14.jl` is the S14 / hard / free part of `noah/rods/reduced/tube_full.jl`. It uses the same
-arithmetic, seeds and folder names, and reproduces that driver's output exactly: `xsaves`,
-`Qsaves`, Tw and Wr were checked identical on short runs with and without noise.
 
 ## Files
 
 | file | what |
 |---|---|
-| `tube_S14.jl` | simulation driver (Julia). It uses `../src/rod_contact2.jl`, `../src/fastkernel.jl` and `../prod/fastprod.jl`, and the environment in `../src/rods`. |
+| `tube_coil.jl` | simulation driver (Julia). It uses `../src/rod_contact2.jl`, `../src/fastkernel.jl` and `../prod/fastprod.jl`, and the environment in `../src/rods`. |
 | `run_L1.5.sh`, `run_L6.sh` | SLURM launchers (array 0–7 = hard/free × 4 η). Add the argument `nonoise` for runs without noise. |
 | `tubeplots.py` | shared helpers: loading, colormaps, 3D tube rendering, κ²τ and the Q measure |
 | `plot_wr_vs_L.py` | Writhe during growth, rows η, columns hard / free, one line per α |
@@ -33,10 +29,10 @@ arithmetic, seeds and folder names, and reproduces that driver's output exactly:
 From this folder:
 
 ```bash
-sbatch run_L1.5.sh            # -> 20261020_tube_S14_{hard,free}_L1.5_na21/          (21 α, ~15 min/task)
-sbatch run_L1.5.sh nonoise    # -> 20261020_tube_S14_{hard,free}_L1.5_na21_nonoise/
-sbatch run_L6.sh              # -> 20261020_tube_S14_{hard,free}_L6.0/               (7 α, ~2.3 h/task)
-sbatch run_L6.sh nonoise      # -> 20261020_tube_S14_{hard,free}_L6.0_nonoise/
+sbatch run_L1.5.sh            # -> 20261020_tube_coil_{hard,free}_L1.5_na21/          (21 α, ~15 min/task)
+sbatch run_L1.5.sh nonoise    # -> 20261020_tube_coil_{hard,free}_L1.5_na21_nonoise/
+sbatch run_L6.sh              # -> 20261020_tube_coil_{hard,free}_L6.0/               (7 α, ~2.3 h/task)
+sbatch run_L6.sh nonoise      # -> 20261020_tube_coil_{hard,free}_L6.0_nonoise/
 ```
 
 Each output file is `eta<η>_a<i>.mat` (MAT v7.3). It contains:
@@ -45,7 +41,7 @@ Each output file is `eta<η>_a<i>.mat` (MAT v7.3). It contains:
 - the parameters.
 
 Runs are resumable: existing files are skipped. Options can be set by environment variable;
-see the header of `tube_S14.jl`.
+see the header of `tube_coil.jl`.
 
 ## Parameters
 
@@ -66,8 +62,8 @@ see the header of `tube_S14.jl`.
 ## Plots
 
 The plots read the run folders directly. Here `H` and `F` stand for the hard-tube and the free
-folder of one set, e.g. `H=20261020_tube_S14_hard_L6.0_nonoise` and
-`F=20261020_tube_S14_free_L6.0_nonoise`. `--at 3` takes the snapshot at L/L0 = 3 as the final
+folder of one set, e.g. `H=20261020_tube_coil_hard_L6.0_nonoise` and
+`F=20261020_tube_coil_free_L6.0_nonoise`. `--at 3` takes the snapshot at L/L0 = 3 as the final
 shape. Output goes to the current folder unless `--out` is given.
 
 ```bash

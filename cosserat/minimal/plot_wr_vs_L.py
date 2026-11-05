@@ -1,9 +1,9 @@
-"""Writhe during growth for the tube_S14.jl runs: rows η τE, columns hard-walled tube | no
+"""Writhe during growth for the tube_coil.jl runs: rows η τE, columns hard-walled tube | no
 confinement; one line per α (vik colours, α > 0 initially right-handed), length increasing
 downward. Wr = -Tw, relative to the tube axis.
 
 usage: python plot_wr_vs_L.py <hard_folder> <free_folder> [--x L0|Le] [--at L/L0] [--out file.pdf]
-  e.g. python plot_wr_vs_L.py 20261020_tube_S14_hard_L6.0 20261020_tube_S14_free_L6.0 --x L0
+  e.g. python plot_wr_vs_L.py 20261020_tube_coil_hard_L6.0 20261020_tube_coil_free_L6.0 --x L0
 """
 import argparse
 import os

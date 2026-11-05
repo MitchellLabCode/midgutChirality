@@ -1,4 +1,4 @@
-"""3D renderings of the tube_S14.jl runs: rows = initial shapes, then the final shapes for each
+"""3D renderings of the tube_coil.jl runs: rows = initial shapes, then the final shapes for each
 confinement and η τE; columns = 4 values of α (−1, −1/3, 1/3, 1). The centerline is drawn as a
 shaded tube, the hard wall as a translucent cylinder.
 

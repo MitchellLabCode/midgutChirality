@@ -1,5 +1,4 @@
-## Growth of the S14 rods in a hard-walled tube or without confinement (minimal version of
-## noah/rods/reduced/tube_full.jl, restricted to the S14 family, hard / free, uniform growth)
+## Growth of the coil rods in a hard-walled tube or without confinement (uniform growth)
 #
 # Overdamped Cosserat rod (RK4), clamped at x = 0 and x = Le ez with fixed end frames, grown
 # uniformly from L0 = 1.05 Le to L_end, with Maxwell remodeling of the rest curvature at the
@@ -11,7 +10,7 @@
 # Lengths in units of Le, times in τE (code units B1 = Le = γ = 1).
 #
 # Usage (from this folder):
-#   julia -p 7 tube_S14.jl hard            # or free, or both (default)
+#   julia -p 7 tube_coil.jl hard            # or free, or both (default)
 # Options (environment variables):
 #   TUBE_LEND   final length L_end/Le                     (default 1.5)
 #   TUBE_NALPHA number of α values in [-1, 1]              (default 7)
@@ -21,7 +20,7 @@
 #   TUBE_ONLY_ETA  run only this η τE (one of TUBE_ETAS; the seeds depend on its position)
 #   TUBE_R      tube radius R/Le                           (default 0.3)
 #   TUBE_DATE   date stamp of the output folder            (default 20261020)
-# Output: ./<date>_tube_S14_<hard|free>_L<L_end>[_na<n>][_nonoise]/eta<η>_a<i>.mat (resumable),
+# Output: ./<date>_tube_coil_<hard|free>_L<L_end>[_na<n>][_nonoise]/eta<η>_a<i>.mat (resumable),
 # with xsaves (200 × (Ns+1) × 3), Qsaves, t, Lrest, N, Wr_fuller, Tw, rho_max and the parameters.
 
 using Distributed
@@ -144,7 +143,7 @@ end
 
     # ---- initial shape -------------------------------------------------------------
     function initial_state(alpha::Float64)
-        """S14 shape for asymmetry α: ψ = tx + i ty = A Σ a_j e_j with a = (1, 0.5 i) at α = -1 and
+        """coil shape for asymmetry α: ψ = tx + i ty = A Σ a_j e_j with a = (1, 0.5 i) at α = -1 and
         its mirror image a* at α = +1, a_α = (1-α)/2 a + (1+α)/2 a*; A from the exact end shortening
         Σ ℓ sqrt(1 - A²|ψ|²) = Le; frames by parallel transport plus a uniform twist (zero link)"""
         N = N0
@@ -210,7 +209,7 @@ end
         ltag = (L_end_tube == 2.5 ? "" : "_L$(L_end_tube)") *
                (tube_nalpha == 7 ? "" : "_na$(tube_nalpha)") *
                (sigma == 1e-3 ? "" : sigma == 0 ? "_nonoise" : "_sig$(sigma)")
-        folder_name = "./$(tube_date)_tube_S14_$(ctag)$(ltag)"
+        folder_name = "./$(tube_date)_tube_coil_$(ctag)$(ltag)"
         out_filename = folder_name * "/eta$(eta)_a$(ia).mat"
         isfile(out_filename) && return out_filename
         mkpath(folder_name)
@@ -254,7 +253,7 @@ end
         T = log(L_end_tube / L_start) / g_rate
         n_tsave = ceil(Int, T / dt0 / (n_saves - 1))
         dt = T / (n_tsave * (n_saves - 1))
-        println("tube S14 $(conf) η=$(eta) α=$(alpha): N0=$(N) dt=$(dt) steps=$(n_tsave * (n_saves - 1))")
+        println("tube coil $(conf) η=$(eta) α=$(alpha): N0=$(N) dt=$(dt) steps=$(n_tsave * (n_saves - 1))")
         flush(stdout)
 
         xsaves = zeros(n_saves, Ns_save + 1, 3)
@@ -322,7 +321,7 @@ end
 confs = filter(c -> c in ARGS, ["hard", "free"]); isempty(confs) && (confs = ["hard", "free"])
 run_etas = haskey(ENV, "TUBE_ONLY_ETA") ? [parse(Float64, ENV["TUBE_ONLY_ETA"])] : tube_etas
 jobs = [(c, eta, ia) for c in confs for eta in run_etas for ia in eachindex(tube_alphas)]
-println("---- $(length(jobs)) tube simulations: S14 x $(confs) x η=$(run_etas) x $(length(tube_alphas)) α, to L/Le = $(L_end_tube), σ = $(sigma) ----")
+println("---- $(length(jobs)) tube simulations: coil x $(confs) x η=$(run_etas) x $(length(tube_alphas)) α, to L/Le = $(L_end_tube), σ = $(sigma) ----")
 pmap(jobs) do j
     run_tube(j...)
 end

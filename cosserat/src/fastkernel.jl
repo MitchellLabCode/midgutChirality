@@ -1,18 +1,17 @@
-## Non-allocating copy of the prod rod kernel (../src/rod_contact2.jl) for the reduced/ runs
+## Non-allocating copy of the rod kernel of rod_contact2.jl (used by ../prod/fastprod.jl and ../minimal/)
 #
 # Same arithmetic, term by term, as
 #   internal_forces_and_torques(x, Q, rod, u0, l0s), pos_next, timestepRK4plastic_remesh
 #   and get_u0_plastic
 # specialized to: uniform moduli, no walls, no self-contact, no external torques, and an
 # external force callback. Positions are Vector{SVector{3}} and frames Vector{SMatrix{3,3}}
-# (rows = directors, as in prod). Checked against the prod kernel by validate_fast.jl.
+# (rows = directors, as in rod_contact2.jl).
 #
 # material_u0 = true (default) stores u0 in the material frame, Qᵢ κ, so that the elastic
 #   energy is invariant under rigid rotations also when u0 ≠ 0 (remodeling runs). This is
-#   the convention of ../src/rod_contact2.jl since the 2026-10-19 fix.
-# material_u0 = false reproduces the pre-fix kernel (../src/rod_contact2_labu0.jl), where u0
-#   is stored in the same lab-frame form as rotLog_2(Qᵢ'Qᵢ₊₁)/ℓ̄ and does not rotate with
-#   the material.
+#   the convention of rod_contact2.jl.
+# material_u0 = false stores u0 in the lab-frame form rotLog_2(Qᵢ'Qᵢ₊₁)/ℓ̄, which does not rotate
+#   with the material.
 
 using StaticArrays
 using LinearAlgebra

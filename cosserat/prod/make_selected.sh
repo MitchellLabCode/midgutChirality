@@ -1,6 +1,6 @@
 #!/bin/bash
-# Build selected/ for plot_selected_frames.m from the V6 batch outputs, with the same
-# choice as the V5 selection: T = 3, Bt/B = 1, ητE = 10, and the same start times t0
+# Build selected/ for plot_selected_frames.m from the V6 batch outputs: T = 3, Bt/B = 1,
+# ητE = 10, and the start times t0 below
 # (s7 from t0 = 20, s10 from t0 = 35). Even samples are WT, odd samples myo.
 #   usage (from prod/):  bash make_selected.sh [date_str]
 date_str=${1:-20261019}

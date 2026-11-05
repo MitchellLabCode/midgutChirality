@@ -1,8 +1,6 @@
-## Shared setup for the production runs: the samples batch (V5 version: QTpTw_contact_batch_samples.jl
-# of noah/rods/prod) with the V6 reference data (refIV6_sample*_walls3_cball.mat) as inputs.
-# Copied verbatim from the prod script except: refIV5 -> refIV6, x0 paths -> ./ (the x0_s*V5 initial centerlines are unchanged),
-# tags s*V5 -> s*V6, date stamp, and all samples by default.
-# The per-run parameter block of prod's run_one is in prepare_run below (also verbatim).
+## Shared setup for the production runs, with the V6 reference data (refIV6_sample*_walls3_cball.mat)
+# as inputs: sample registry, parameter grid, per-run parameters (prepare_run) and the clamped,
+# data-driven ends. The initial centerlines x0_s*V5_t*.mat (in this folder) are the V5 ones.
 # Included by QTpTw_batch_samples_V6.jl and validate_fastprod.jl.
 
 x_c = 1
@@ -35,7 +33,7 @@ default_samples = [1, 2, 3, 4, 5, 6, 7, 71, 8, 9, 10, 101]
 date_str = "20261019"
 
 # ---- parameter sweep (shared across samples) --------------------------------
-# Fine log-spaced grid (as in grid_QTpTw_spline_finer.jl of noah/rods/Q_vi).
+# Fine log-spaced grid.
 #Ts                = [1.0, 3.0] # 10 .^ collect(-1:0.2:log10(30))
 #twist_ratios      = [0.; 10 .^ collect(-1:0.1:1)]
 #plastic_rates_arr = [0.; 10 .^ collect(-2:0.3:3)]
@@ -118,7 +116,7 @@ function setup_sample(sample_id::Int)
 end
 
 
-# ---- per-run parameters: verbatim from run_one of the prod script -----------------------
+# ---- per-run parameters ----------------------------------------------------------------
 function prepare_run(smp, T::Float64, twist_ratio::Float64, plastic_rate::Float64)
     x = copy(smp.x)                 # local copy -- safe under parallelism
     asym = 1.0
@@ -168,7 +166,7 @@ function prepare_run(smp, T::Float64, twist_ratio::Float64, plastic_rate::Float6
               walls, cutoff, W1, growth_rate, circum_radii, plastic_rate, dxmax, params)
 end
 
-# ---- clamped, data-driven ends: = bcs of the prod script (fast layout, in place) --------
+# ---- clamped, data-driven ends (fast layout, in place) -----------------------------------
 function make_bc_fast(smp, T::Float64, L::Float64)
     x_itp = smp.x_itp
     Q1_itp = smp.Q1_itp

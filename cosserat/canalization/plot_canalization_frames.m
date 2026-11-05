@@ -9,15 +9,15 @@
 %           at their current point. Axes as in the paper figure: Wr along the
 %           top, L/L0 increasing downward, a line at Wr = 0.
 %
-% Writhe comes from precompute_writhe.py, which uses the same formula as the
-% notebook (verified against measurements.compute_wr) and flags the run with a
+% Writhe comes from precompute_writhe.py (formula of ../src/measurements.py,
+% verified against measurements.compute_wr), which also flags the run with a
 % writhe discontinuity. Run that first:
 %     python precompute_writhe.py 202609022_canalization_box2f_s6s1
 %
-% Colours follow the notebook: alpha = 1 - 2*tau on vik_r over [-1.2, 1.2].
+% Colours: alpha = 1 - 2*tau on vik_r over [-1.2, 1.2].
 % Positions are in units of the initial length (L0 = 1), as in the simulation.
 %
-% Output: <folder>/frames_wr/frame_NNN.png. Run from rods/canalization/.
+% Output: <folder>/frames_wr/frame_NNN.png. Run from canalization/.
 
 addpath(".")
 
@@ -64,7 +64,7 @@ n_frames = numel(snap_idx);
 
 vik = load('vik.mat').vik;
 nv  = size(vik, 1);
-% notebook: Normalize(-1.2, 1.2) on vik_r, i.e. vik read backwards
+% Normalize(-1.2, 1.2) on vik_r, i.e. vik read backwards
 col_of = @(a) vik(1 + round((1 - (min(max(a,-1.2),1.2) + 1.2)/2.4) * (nv-1)), :);
 
 % ---- selected runs: snap to the nearest run that is NOT excluded ----------

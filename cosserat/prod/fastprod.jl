@@ -1,11 +1,11 @@
 ## Fast (non-allocating) version of run_simulation_plastic_remeshed (../src/rod_contact2.jl)
 #
-# Same algorithm, step by step, as the prod driver: RK4 with clamped, time-dependent end
+# Same algorithm, step by step: RK4 with clamped, time-dependent end
 # positions and frames, polyhedral walls, circumradius self-contact, remeshing every 5
 # steps (with the per-edge growth weights w_seg), growth and Maxwell remodeling with the
 # rest curvature in the material frame. Internal forces and the RK4 sub-steps come from
-# ../src/fastkernel.jl. Saves go through prod's interpolate_rodstate, so the output
-# has the same layout as prod.
+# ../src/fastkernel.jl. Saves go through interpolate_rodstate (../src/rod_contact2.jl), so the
+# output has the same layout as run_simulation_plastic_remeshed.
 # Checked against run_simulation_plastic_remeshed by validate_fastprod.jl.
 #
 # Requires ../src/rod_contact2.jl (Plane, interpolate_rodstate) and ../src/fastkernel.jl.
@@ -35,7 +35,7 @@ function neighbour_walls!(nw::Vector{Vector{Int}}, x::Vector{V3}, W::FastWalls, 
 end
 
 function add_wall_forces!(F::Vector{V3}, x::Vector{V3}, nw::Vector{Vector{Int}}, W::FastWalls, W1::Float64)
-    """= ext_forces of the prod scripts: W1 * dist * force_orient on nodes 2..N
+    """wall forces W1 * dist * force_orient on nodes 2..N
     (get_force_components: deepest violated face, scanned in list order)"""
     @inbounds for i = 2:length(x)-1
         min_dist = 0.0

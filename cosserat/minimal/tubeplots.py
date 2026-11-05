@@ -1,4 +1,4 @@
-"""Shared helpers for the plots of the tube_S14.jl runs: loading, colormaps, 3D tube rendering and
+"""Shared helpers for the plots of the tube_coil.jl runs: loading, colormaps, 3D tube rendering and
 the two local chirality measures (κ²τ and the windowed Q measure).
 
 Conventions
@@ -28,7 +28,7 @@ VIEWS = {"persp": ((24, -58), [2, 0, 1]), "above": ((82, -15 - 90), [2, 1, 0])}
 
 # ---- data ------------------------------------------------------------------------
 def load_runs(folder, at_LL0=None):
-    """runs of one output folder of tube_S14.jl, as dicts with alpha, a (oriented α), eta, Lrest,
+    """runs of one output folder of tube_coil.jl, as dicts with alpha, a (oriented α), eta, Lrest,
     Wr (= -Tw), xsaves (n_saves, nodes, 3), tube_radius; at_LL0: stop at the snapshot closest to
     L/L0 = at_LL0 (treated as the final shape)"""
     runs = []

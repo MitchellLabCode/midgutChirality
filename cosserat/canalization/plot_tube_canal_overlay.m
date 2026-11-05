@@ -1,7 +1,7 @@
 % Overlay version of plot_tube_canal.m: final shapes of 4 runs, overlaid in
 % pairs with transparency. Columns: the two alpha < 0 runs, the two alpha > 0
 % runs. Rows: ventral and side views, on common axes so the panels compare.
-% alpha = 1 - 2*tau, as in plot_canalization_frames.m and the notebook.
+% alpha = 1 - 2*tau, as in plot_canalization_frames.m.
 % Colours as in plot_tube_canal.m: tau on vik over [min tau, max tau]
 % (= alpha on vik_r over [-1.2, 1.2]).
 

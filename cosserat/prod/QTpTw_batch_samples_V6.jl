@@ -1,20 +1,19 @@
-## Production runs: the samples batch on the V6 data (the V6 successor of the V5 batch
-# QTpTw_contact_batch_samples.jl of noah/rods/prod)
+## Production runs: every sample × the parameter grid (T, twist_ratio, plastic_rate) on the V6 data
 #
-# Same samples, start times, parameter grid (T, twist_ratio, plastic_rate), stiffnesses,
-# walls, self-contact, remeshing, time step and saving as prod, with
+# Measured samples (prod_common.jl) with their walls, self-contact, remeshing, data-driven clamped
+# ends, growth and remodeling, with
 #   - refIV6_sample*_walls3_cball.mat as reference data (see prod_common.jl)
 #   - the fast kernel (fastprod.jl + ../src/fastkernel.jl), checked against
-#     run_simulation_plastic_remeshed by validate_fastprod.jl
-#   - the two 2026-10-19 fixes of ../src/rod_contact2.jl: rest curvature in the material
-#     frame (material_u0 = true) and growth of remeshed edges weighted by w_seg
+#     run_simulation_plastic_remeshed (../src/rod_contact2.jl) by validate_fastprod.jl
+#   - rest curvature in the material frame (material_u0 = true) and growth of remeshed edges
+#     weighted by w_seg, as in ../src/rod_contact2.jl
 #
 # Usage (from this folder):
 #   julia -p 48 QTpTw_batch_samples_V6.jl          # runs `default_samples`
 #   julia -p 48 QTpTw_batch_samples_V6.jl 4 5 6    # runs only samples 4, 5 and 6
 #
 # Output: ./<date>_QTpTw_contact2_t<t0>_w3_a3e2_s<id>V6/cutoff01contact_T<T>_tw<tw>_p<p>.mat
-# with the same keys as prod (xsaves, Qsaves, params). Runs are resumable.
+# with keys xsaves, Qsaves, params. Runs are resumable.
 
 using Distributed
 

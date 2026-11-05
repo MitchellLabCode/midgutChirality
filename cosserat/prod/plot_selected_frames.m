@@ -9,7 +9,7 @@
 %
 % Output: selected/frames/<run name>/frame_NNN.png
 %
-% Run from rods/prod/. No local functions, so it can be pasted into the
+% Run from prod/. No local functions, so it can be pasted into the
 % command window.
 
 addpath(".")
@@ -18,11 +18,9 @@ addpath(".")
 selected_dir = 'selected';
 out_root     = fullfile(selected_dir, 'frames');
 
-% The selected files do not record t0 (it lived in the source folder name).
-% These were identified by byte-matching each selected file against its source
-% folder 20260909_QTpTw_contact2_t<t0>_w3_a3e2_s<N>V5 (V6 runs: 20261019_..._s<N>V6, see
-% make_selected.sh, which uses the same t0); note s7 and s10 have
-% several candidate folders, and the correct ones are t20 and t35.
+% The selected files do not record t0 (it is in the name of the source folder
+% <date>_QTpTw_contact2_t<t0>_w3_a3e2_s<N>V6). These are the t0 used by
+% make_selected.sh; s7 and s10 start from t0 = 20 and 35.
 t0_of = containers.Map('KeyType','double','ValueType','double');
 t0_of(1) = 38;  t0_of(2) = 25;  t0_of(3) = 45;  t0_of(4) = 36;  t0_of(5) = 25;
 t0_of(6) = 54;  t0_of(7) = 20;  t0_of(8) = 37;  t0_of(9) = 45;  t0_of(10) = 35;
