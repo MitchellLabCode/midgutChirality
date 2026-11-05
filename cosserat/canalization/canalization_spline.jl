@@ -7,7 +7,7 @@ using Distributed
     Pkg.instantiate();
 end
 @everywhere begin # imports
-    include("../src/rod_contact.jl")
+    include("../src/rod_contact2.jl")
     include("../src/walls.jl")
     include("../src/contact.jl")
     using ProgressMeter
@@ -22,7 +22,7 @@ end
 
 @everywhere begin # parameter definitions
     
-    path = "./SRVbox2f_16_notail/"
+    path = "./SRVbox2f_56/"
     key = ".mat"
     mat_files = filter(x -> occursin(key, x), readdir(path))
 
@@ -102,8 +102,8 @@ status = @showprogress pmap(1:num_files) do n
         cradii_arr[t, :] = 1.0*c_radii_scoord[t](s_i)
     end
     
-    T = 1.0
-    twist_ratio = 2.0
+    T = 3.0
+    twist_ratio = 1.0
     plastic_rate = 10.0
 
     #twist_ratio = 1.0
@@ -138,7 +138,7 @@ status = @showprogress pmap(1:num_files) do n
    St = 1e3
    B = 1.0 #[B_ave - B_diff*tanh(20*(i/N-0.75)) for i = 1:N] # linear tapering of bending stiffness
    Bt = twist_ratio * B
-   alpha = 0*3e2 # self-contact parameter
+   alpha = 3e2 # self-contact parameter
 
    gamma_p = 1.0
    gamma_t = 1.0
@@ -204,7 +204,7 @@ status = @showprogress pmap(1:num_files) do n
         rod, S, St, bcs, circum_radii, alpha, walls, cutoff, ext_forces, ext_torques, growth_rate, plastic_rate, dxmax)
     
     #out_filename = "./plas2/cutoff01plastic10_T$(T).mat"
-    folder_name = "./20260402_canalization_box2f_nocontact_notail_s6s1"
+    folder_name = "./202609022_canalization_box2f_s5s6"
     mkpath(folder_name)
     out_filename = folder_name * "/cutoff01contact_n$(n)_tau$(tau).mat"
     matwrite(out_filename, Dict("xsaves" => xsaves, "Qsaves" => Qsaves, "params" => params))

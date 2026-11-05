@@ -1,13 +1,13 @@
 
 % load reference mesh
 path_meshes = "../data/meshes_spRS/meshes_sample6.mat";
-path_data = "../data/refIV5_sample6_walls.mat";
+path_data = "../data/refIV6_sample6_walls3_cball.mat";
 
 
 path_meshes = "../data/meshes_spRS/meshes_sample1.mat";
-path_data = "../data/refIV5_sample1_walls3.mat";
+path_data = "../data/refIV6_sample1_walls3_cball.mat";
 %path_meshes = "../data/meshes_spRS/meshes_sample4.mat";
-%path_data = "../data/ref_sample4_walls.mat";
+%path_data = "../data/refIV6_sample4_walls3_cball.mat";
 
 meshes = load(path_meshes);
 meshes = meshes.meshes;

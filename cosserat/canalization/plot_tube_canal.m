@@ -1,13 +1,13 @@
 
 % load reference mesh
 path_meshes = "../data/meshes_spRS/meshes_sample6.mat";
-path_data = "../data/refIV5_sample6_walls.mat";
+path_data = "../data/refIV6_sample6_walls3_cball.mat";
 
 
 path_meshes = "../data/meshes_spRS/meshes_sample1.mat";
-path_data = "../data/refIV5_sample1_walls3.mat";
+path_data = "../data/refIV6_sample1_walls3_cball.mat";
 %path_meshes = "../data/meshes_spRS/meshes_sample4.mat";
-%path_data = "../data/ref_sample4_walls.mat";
+%path_data = "../data/refIV6_sample4_walls3_cball.mat";
 
 meshes = load(path_meshes);
 meshes = meshes.meshes;
@@ -30,7 +30,9 @@ folder_name = "20260325_canalization_box2f_s6s3"; % with fixed posterior IC
 folder_name = "20260406_canalization_box2f_nocontact_notail_s6s1"; %
 
 folder_name = "20260402_canalization_box2f_s6s1"; %
+folder_name = "20260919_canalization_box2_s6s1";
 
+folder_name = "202609022_canalization_box2f_s6s1";
 
 %path_sim = fullfile(folder_name, "cutoff01_T1.0_p0.3.mat");
 %sim_data = load(path_sim);
