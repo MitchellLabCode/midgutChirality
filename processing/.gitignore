@@ -1,0 +1,8 @@
+# outputs and local settings (data are on figshare, not in git)
+config_paths_local.m
+Fig1/output/
+Fig2/output/
+Fig1/data_figshare_fig1/
+Fig2/data_figshare_fig2/
+*.asv
+timeAlign/output/
