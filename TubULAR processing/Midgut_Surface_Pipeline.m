@@ -6,10 +6,6 @@
 % kinematics. Adapted from the TubULAR example pipelines (Mitchell & Cislo,
 % Nat. Methods 2023). "Methods" and "Supplement" refer to "Mechanical canalization of chiral gut morphogenesis".
 % See README.md for requirements.
-%
-% Run section by section. After restarting MATLAB, rerun USER
-% SETTINGS and MASTER SETTINGS before continuing. Two steps happen in
-% ilastik, where indicated.
 
 
 %% USER SETTINGS ==========================================================
