@@ -1,10 +1,15 @@
 %% MIDGUT SURFACE PIPELINE (TubULAR) -- one copy of this script per sample
 % Fused, deconvolved light-sheet stacks of the embryonic Drosophila midgut
 % -> 16-bit stabilized stacks -> surface meshes (ilastik + level sets)
-% -> APDV-aligned, parameterized cut meshes and pullbacks -> surface
+% -> APDV-aligned, parameterized cut meshes and pullbacks. Continue with
+% midgut_tubular_kinematics.m for time-smoothed pullbacks, PIV and surface
 % kinematics. Adapted from the TubULAR example pipelines (Mitchell & Cislo,
 % Nat. Methods 2023). "Methods" and "Supplement" refer to "Mechanical canalization of chiral gut morphogenesis".
-% See README.md for requirements and steps.
+% See README.md for requirements.
+%
+% Run section by section. After restarting MATLAB, rerun USER
+% SETTINGS and MASTER SETTINGS before continuing. Two steps happen in
+% ilastik, where indicated.
 
 
 %% USER SETTINGS ==========================================================
@@ -23,7 +28,8 @@ dir16bit_prestab = fullfile(dir16bit, 'data_pre_stabilization') ;
 % Sample-specific reference timepoints (timestamps, not indices)
 trefAPDV    = 39 ;  % timepoint at which the dorsal landmark is trained in ilastik
 trefEndcaps = 0 ;   % timepoint at which the dorsal-most endcap vertices are defined
-t0          = 0 ;   % TubULAR reference time: phi0 of the (s,phi) maps and seeding of pathlines
+t0_for_phi0 = 0 ;   % timepoint at which phi0 (the corners of the (s,phi) pullback maps) is defined
+% The Lagrangian reference time t0 is set in midgut_tubular_kinematics.m.
 
 overwrite = false ; % true: recompute steps even if their output already exists
 
@@ -218,10 +224,6 @@ else
 end
 
 %% TubULAR instance
-% Passing t0 through opts writes tubular_output/t0_referenceTime.txt. Setting
-% tubi.t0 directly does not stick: TubULAR's internal t0set() calls reset it
-% to the first timepoint when that file is missing.
-opts.t0 = t0 ;
 tubi = TubULAR(xp, opts) ;
 tubi.xp.expMeta.channelsUsed = channelsUsed + 1 ;  % TubULAR channel indices are 1-based
 tubi.plotting.preview = false ;
@@ -354,9 +356,9 @@ tubi.sliceMeshEndcaps(endcapOpts, methodOpts) ;
 tubi.cleanCylMeshes(struct('overwrite', overwrite))
 
 %% Cut meshes, (s,phi) meshes and pullbacks
-% phi0 of each timepoint is matched to its neighbor, so timepoints are
-% processed outward from t0.
-for tt = [tps(tps >= t0), fliplr(tps(tps < t0))]
+% phi0 of each timepoint is matched to the (s,phi) pullback of its
+% neighbor, so timepoints are processed outward from t0_for_phi0.
+for tt = [tps(tps >= t0_for_phi0), fliplr(tps(tps < t0_for_phi0))]
     disp(['NOW PROCESSING TIME POINT ', num2str(tt)]);
     tubi.setTime(tt) ;
 
@@ -374,21 +376,22 @@ for tt = [tps(tps >= t0), fliplr(tps(tps < t0))]
 
     % (s,phi) parameterization
     spcutMeshOptions = struct() ;
-    spcutMeshOptions.t0_for_phi0     = tubi.t0 ;  % timepoint at which the corners of the pullback map are defined
+    spcutMeshOptions.t0_for_phi0     = t0_for_phi0 ;
     spcutMeshOptions.save_phi0patch  = false ;
     spcutMeshOptions.iterative_phi0  = false ;
     spcutMeshOptions.smoothingMethod = 'savgol' ;
     spcutMeshOptions.overwrite       = overwrite ;
     tubi.generateCurrentSPCutMesh([], spcutMeshOptions) ;
 
-    % Pullback images: MIPs over onion layers around the surface
+    % Pullback images: MIPs over onion layers around the surface. The
+    % (s,phi) pullbacks are regenerated later by midgut_tubular_kinematics.m.
     if compute_pullback || ~exist(sprintf(tubi.fullFileBase.im_sp, tt), 'file') ...
             || ~exist(sprintf(tubi.fullFileBase.im_uv, tt), 'file')
         pbOptions = struct() ;
         pbOptions.overwrite      = overwrite ;
         pbOptions.generate_uv    = true ;    % conformal
         pbOptions.generate_sphi  = true ;    % (s,phi)
-        pbOptions.generate_spsm  = false ;   % needs the time-smoothed meshes of Part 3
+        pbOptions.generate_spsm  = false ;   % made in midgut_tubular_kinematics.m
         pbOptions.generate_ricci = false ;
         pbOptions.numLayers      = [20, 20] ;  % [outward, inward]
         pbOptions.layerSpacing   = 5 ;         % pixels between onion layers
@@ -416,3 +419,7 @@ for tidx = 1:numel(tps)
     meshout.u(:, 1) = meshout.u(:, 1) / max(meshout.u(:, 1)) ;  % normalize s to [0, 1]
     exportOBJ(meshout, fullfile(tubi.dir.spcutMesh, sprintf('obj_%d.obj', tidx - 1)))
 end
+
+
+% Continue with midgut_tubular_kinematics.m (time-smoothed pullbacks, PIV,
+% surface kinematics and pathlines).
