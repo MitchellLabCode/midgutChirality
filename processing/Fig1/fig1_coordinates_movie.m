@@ -1,7 +1,7 @@
 % fig1_coordinates_movie.m
 % Movie frames of the surface coordinates on the gut mesh over time: left,
 % the longitudinal coordinate (mesh hoop index, A -> P) in copper; right, the
-% azimuthal coordinate phi (position around the hoop) in sky. Myocyte
+% azimuthal coordinate (position around the hoop) in sky. Myocyte
 % stripes in yellow, mesh end caps in grey. Fixed camera and limits, so the
 % scale is the same in every frame. One PNG per timepoint in out_dir.
 
@@ -37,7 +37,7 @@ pad_frac = 0.04;          % margin around the gut, fraction of panel height
 col_stripe = [0.929 0.694 0.125];
 cmaps  = {copper, sky};
 coords = {U, V};
-titles = {'longitudinal coordinate', 'azimuthal coordinate \phi'};
+titles = {'Longitudinal coordinate', 'Azimuthal coordinate'};
 
 if ~exist(out_dir, 'dir'); mkdir(out_dir); end
 fig = figure('Color', 'w', 'Position', [100, 100, fig_px]);
