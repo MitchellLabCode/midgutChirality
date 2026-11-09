@@ -1,9 +1,10 @@
 % fig1_coordinates_movie.m
 % Movie frames of the surface coordinates on the gut mesh over time: left,
 % the longitudinal coordinate (mesh hoop index, A -> P) in copper; right, the
-% azimuthal coordinate (position around the hoop) in sky. Myocyte
-% stripes in yellow, mesh end caps in grey. Fixed camera and limits, so the
-% scale is the same in every frame. One PNG per timepoint in out_dir.
+% azimuthal coordinate (position around the hoop) in sky. Myocyte stripes in
+% yellow, mesh end caps in grey, 50 um scale bar in the right panel. Fixed
+% camera and limits, so the scale is the same in every frame. One PNG per
+% timepoint in out_dir.
 
 clear; close all
 here = fileparts(mfilename('fullpath'));
@@ -59,6 +60,14 @@ half_view = (1 + pad_frac) * max(half_h, half_w / panel_aspect);
 cam_target = ctar + c_r*rgt + c_u*upv;
 cam_pos    = cpos + c_r*rgt + c_u*upv;
 cam_va     = 2*atand(half_view / norm(ctar - cpos));
+
+%%% 50 um scale bar, in the screen plane (true length in the orthographic
+%%% view), at the lower right of the gut's extent over all frames, moved
+%%% towards the camera so the mesh never hides it
+bar_len = 50;    % [um]
+bar_r = max(pr) - [bar_len; 0];
+bar_u = min(pu) + 0.04 * (max(pu) - min(pu));
+bar_xyz = ctar + bar_r * rgt + bar_u * upv - 0.5 * norm(ctar - cpos) * fwd;   % 2 x 3
 delete(ax0)
 
 for t = 1:num_t
@@ -81,6 +90,7 @@ for t = 1:num_t
         for hoop = [1, 100]   % end caps
             plot3(vert_UV(hoop,:,1), vert_UV(hoop,:,2), vert_UV(hoop,:,3), 'LineWidth', cap_w, 'Color', 0.5*[1,1,1])
         end
+        if p == 2, plot3(bar_xyz(:,1), bar_xyz(:,2), bar_xyz(:,3), 'k', 'LineWidth', 3, 'Clipping', 'off'), end
         lighting gouraud; material dull
         daspect([1,1,1])
         xlim(lims(:,1)); ylim(lims(:,2)); zlim(lims(:,3))

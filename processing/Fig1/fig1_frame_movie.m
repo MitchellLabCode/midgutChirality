@@ -2,8 +2,8 @@
 % Movie frames of the material frame along the centerline over time: the
 % gut mesh (transparent), the centerline as a tube, and the frame vectors
 % d1 (L-R) and d2 (V-D) at every centerline edge. Fixed camera, limits and
-% arrow length, so the scale is the same in every frame. One PNG per
-% timepoint in out_dir.
+% arrow length, so the scale is the same in every frame; 50 um scale bar.
+% One PNG per timepoint in out_dir.
 
 clear; close all
 here = fileparts(mfilename('fullpath'));
@@ -32,6 +32,24 @@ dirs = [1 2]; if show_d3, dirs = [1 2 3]; end
 
 if ~exist(out_dir, 'dir'); mkdir(out_dir); end
 fig = figure('Color', 'w', 'Position', [100, 100, 1300, 820]);
+
+% 50 um scale bar, in the screen plane (true length in the orthographic
+% view), at the lower right of the gut's extent over all frames, moved
+% towards the camera so the mesh never hides it. The camera is the one the
+% loop below gets from view(cam_view) with these limits.
+ax0 = axes(fig);
+daspect(ax0, [1 1 1]); xlim(ax0, lims(:,1)); ylim(ax0, lims(:,2)); zlim(ax0, lims(:,3));
+view(ax0, cam_view)
+cpos = campos(ax0); ctar = camtarget(ax0); cup = camup(ax0);
+delete(ax0)
+fwd = (ctar - cpos) / norm(ctar - cpos);
+rgt = cross(fwd, cup); rgt = rgt / norm(rgt);
+upv = cross(rgt, fwd);
+pr = (all_v - ctar) * rgt';  pu = (all_v - ctar) * upv';
+bar_len = 50;    % [um]
+bar_r = max(pr) - [bar_len; 0];
+bar_u = min(pu) + 0.04 * (max(pu) - min(pu));
+bar_xyz = ctar + bar_r * rgt + bar_u * upv - 0.5 * norm(ctar - cpos) * fwd;   % 2 x 3
 for t = 1:num_t
     clf
     msh  = data.meshes{t};
@@ -48,6 +66,7 @@ for t = 1:num_t
         quiver3(base(:,1), base(:,2), base(:,3), arrow_len*d(:,1), arrow_len*d(:,2), arrow_len*d(:,3), 0, ...
             'LineWidth', 2, 'Color', dcol{i}, 'MaxHeadSize', 0.5)
     end
+    plot3(bar_xyz(:,1), bar_xyz(:,2), bar_xyz(:,3), 'k', 'LineWidth', 3, 'Clipping', 'off')
     daspect([1,1,1])
     xlim(lims(:,1)); ylim(lims(:,2)); zlim(lims(:,3))
     view(cam_view)
