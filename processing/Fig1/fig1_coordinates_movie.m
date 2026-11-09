@@ -4,7 +4,7 @@
 % azimuthal coordinate (position around the hoop) in sky. Myocyte stripes in
 % yellow, mesh end caps in grey, 50 um scale bar in the right panel. Fixed
 % camera and limits, so the scale is the same in every frame. One PNG per
-% timepoint in out_dir.
+% timepoint in out_dir; timestamp top left, minutes from the first frame.
 
 clear; close all
 here = fileparts(mfilename('fullpath'));
@@ -22,8 +22,6 @@ cap_w      = 4;           % end-cap line width [pt]
 all_data = load(P.framesV6).all_data;
 data = all_data{idx_sample};
 num_t = min([numel(data.meshes), size(data.cent,1), size(data.myocytes_raw.red,1)]);
-time_lags = get_time_lags(P, all_data);
-lag = time_lags(idx_sample);
 
 %%% fixed limits from every mesh
 all_v = cell2mat(cellfun(@(m) m.v, data.meshes(1:num_t), 'UniformOutput', false));   % stacked vertices, all frames
@@ -41,6 +39,8 @@ coords = {U, V};
 titles = {'Longitudinal coordinate', 'Azimuthal coordinate'};
 
 if ~exist(out_dir, 'dir'); mkdir(out_dir); end
+ts_font = 'Helvetica Neue';  % timestamp font; falls back to Nimbus Sans (Helvetica clone) if not installed
+if ~any(strcmp(listfonts, ts_font)), ts_font = 'Nimbus Sans'; end
 fig = figure('Color', 'w', 'Position', [100, 100, fig_px]);
 
 % camera: orthographic view(cam_view); target and view angle chosen so the
@@ -102,6 +102,8 @@ for t = 1:num_t
         annotation(fig, 'textbox', [pos{p}(1), 0.86, pos{p}(3), 0.06], 'String', titles{p}, ...
             'EdgeColor', 'none', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize', 14)
     end
-    sgtitle(sprintf('%d min', round(aligned_time(t, lag, 'frame', P))))
+    annotation(fig, 'textbox', [0.015, 0.925, 0.2, 0.06], 'String', sprintf('%d min', P.dt*(t-1)), ...
+        'EdgeColor', 'none', 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top', ...
+        'FontName', ts_font, 'FontSize', 16)   % timestamp, top left, from t = 0
     save_frame(fig, fullfile(out_dir, sprintf('%06d.png', t)), 200)
 end

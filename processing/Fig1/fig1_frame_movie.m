@@ -3,7 +3,8 @@
 % gut mesh (transparent), the centerline as a tube, and the frame vectors
 % d1 (L-R) and d2 (V-D) at every centerline edge. Fixed camera, limits and
 % arrow length, so the scale is the same in every frame; 50 um scale bar.
-% One PNG per timepoint in out_dir.
+% One PNG per timepoint in out_dir; timestamp top left, minutes from the
+% first frame.
 
 clear; close all
 here = fileparts(mfilename('fullpath'));
@@ -23,14 +24,14 @@ dcol = {cl(2,:), cl(3,:), cl(1,:)};    % d1 red-orange, d2 yellow, d3 blue
 all_data = load(P.framesV6).all_data;
 data = all_data{idx_sample};
 num_t = min([numel(data.meshes), size(data.cent,1), size(data.Q,1)]);
-time_lags = get_time_lags(P, all_data);
-lag = time_lags(idx_sample);
 
 all_v = cell2mat(cellfun(@(m) m.v, data.meshes(1:num_t), 'UniformOutput', false));   % stacked vertices, all frames
 lims = [min(all_v) - 5; max(all_v) + 5];
 dirs = [1 2]; if show_d3, dirs = [1 2 3]; end
 
 if ~exist(out_dir, 'dir'); mkdir(out_dir); end
+ts_font = 'Helvetica Neue';  % timestamp font; falls back to Nimbus Sans (Helvetica clone) if not installed
+if ~any(strcmp(listfonts, ts_font)), ts_font = 'Nimbus Sans'; end
 fig = figure('Color', 'w', 'Position', [100, 100, 1300, 820]);
 
 % 50 um scale bar, in the screen plane (true length in the orthographic
@@ -72,6 +73,8 @@ for t = 1:num_t
     view(cam_view)
     axis off
     lighting gouraud; material dull; camlight
-    title(sprintf('%d min', round(aligned_time(t, lag, 'frame', P))), 'FontSize', 16, 'FontWeight', 'normal')
+    annotation(fig, 'textbox', [0.03, 0.84, 0.2, 0.06], 'String', sprintf('%d min', P.dt*(t-1)), ...
+        'EdgeColor', 'none', 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top', ...
+        'FontName', ts_font, 'FontSize', 16)   % timestamp, top left, from t = 0
     save_frame(fig, fullfile(out_dir, sprintf('%06d.png', t)), 200)
 end
