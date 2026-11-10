@@ -788,11 +788,32 @@ end
 
 
 
+"""
+    fix_total_growth(ell_rates, w_seg, total_growth, t)
+
+Optional normalization of the growth (keyword `total_growth` of run_simulation_plastic_remeshed):
+`total_growth(t)` is the prescribed rate of change of the total rest length. The edge elongation
+rates are scaled so that they sum to it, keeping their profile along the rod. If the summed rate is
+not clearly positive (< half the target), a uniform rate per initial edge (∝ w_seg) is added instead.
+`total_growth = nothing` (default) leaves the rates unchanged.
+"""
+fix_total_growth(ell_rates, w_seg, ::Nothing, t) = ell_rates
+function fix_total_growth(ell_rates, w_seg, total_growth, t)
+    target = total_growth(t)
+    tot = sum(ell_rates)
+    if tot > 0.5 * target && tot > 0
+        return ell_rates .* (target / tot)
+    else
+        return ell_rates .+ w_seg .* ((target - tot) / sum(w_seg))
+    end
+end
+
 function run_simulation_plastic_remeshed(xpos0::Matrix{Float64}, Qs0::Array{Float64, 3},
     dt::Float64, Ns::Int, T::Float64, n_saves::Int,
     rod0::RodElements, S::Float64, St::Float64,
     bcs::Any, circum_radii, alpha::Float64,
-    walls::Vector{Plane}, cutoff::Float64, ext_forces::Any, ext_torques::Any, growth_rates, plastic_rate::Float64, dxmax::Float64; elastic=false, proba=0.0
+    walls::Vector{Plane}, cutoff::Float64, ext_forces::Any, ext_torques::Any, growth_rates, plastic_rate::Float64, dxmax::Float64; elastic=false, proba=0.0,
+    total_growth=nothing
     )
 
     N = size(Qs0,1)
@@ -856,7 +877,7 @@ function run_simulation_plastic_remeshed(xpos0::Matrix{Float64}, Qs0::Array{Floa
             cradii = [circum_radii(points...) for points = itp_points]
 
             neighbour_list = make_neighbour_points(xpos, cradii)
-            ell_rates = w_seg .* [growth_rates(points...) for points = itp_points][2:end]
+            ell_rates = fix_total_growth(w_seg .* [growth_rates(points...) for points = itp_points][2:end], w_seg, total_growth, t)
             xpos, Qs, u0, l0s = timestepRK4plastic_remesh(t, xpos, Qs, l0s, u0, dt, rod, bcs, neighbour_walls,
                                                             alpha, neighbour_list, cradii,
                                                              ext_forces, ext_torques, ell_rates, plastic_rate, dxmax)
@@ -881,14 +902,14 @@ function run_simulation_plastic_remeshed(xpos0::Matrix{Float64}, Qs0::Array{Floa
                 neighbour_walls = make_neighbour_walls(xpos, walls, cutoff)
                 s_coords = get_fractional_arclength(xpos)
                 itp_points = [(t, s) for s = s_coords]
-                ell_rates = w_seg .* [growth_rates(points...) for points = itp_points][2:end]
+                ell_rates = fix_total_growth(w_seg .* [growth_rates(points...) for points = itp_points][2:end], w_seg, total_growth, t)
                 cradii = [circum_radii(points...) for points = itp_points]
 
                 neighbour_list = make_neighbour_points(xpos, cradii)
             else
                 s_coords = get_fractional_arclength(xpos)
                 itp_points = [(t, s) for s = s_coords]
-                ell_rates = w_seg .* [growth_rates(points...) for points = itp_points][2:end]
+                ell_rates = fix_total_growth(w_seg .* [growth_rates(points...) for points = itp_points][2:end], w_seg, total_growth, t)
                 cradii = [circum_radii(points...) for points = itp_points]
             end
             xpos, Qs, u0, l0s = timestepRK4plastic_remesh(t, xpos, Qs, l0s, u0, dt, rod, bcs, neighbour_walls,

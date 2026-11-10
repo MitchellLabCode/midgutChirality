@@ -201,8 +201,11 @@ function run_fastprod(xpos0::Matrix{Float64}, Qs0::Array{Float64,3}, dt::Float64
                       n_saves::Int, S::Float64, St::Float64, B::Float64, Bt::Float64,
                       gamma_p::Float64, gamma_t::Float64, bc!, circum_radii, alpha::Float64,
                       walls::Vector{Plane}, cutoff::Float64, W1::Float64, growth_rates,
-                      plastic_rate::Float64, dxmax::Float64; material_u0::Bool=true, show_progress::Bool=false)
-    """bc!(t, x, Q) imposes the clamped ends on Vector{V3} / Vector{M3} in place"""
+                      plastic_rate::Float64, dxmax::Float64; material_u0::Bool=true, show_progress::Bool=false,
+                      total_growth=nothing)
+    """bc!(t, x, Q) imposes the clamped ends on Vector{V3} / Vector{M3} in place.
+    total_growth(t): optional prescribed total rest-length growth rate (fix_total_growth of
+    ../src/rod_contact2.jl, applied wherever the edge rates are refreshed, as there)"""
     N = size(Qs0, 1)
     xsaves = zeros(n_saves, Ns + 1, 3)
     Qsaves = zeros(n_saves, Ns, 3, 3)
@@ -239,6 +242,7 @@ function run_fastprod(xpos0::Matrix{Float64}, Qs0::Array{Float64,3}, dt::Float64
         for i = 1:length(x)-1 # growth sampled at the end node of each edge, as in prod
             ell_rates[i] = w_seg[i] * growth_rates(t, sc[i+1])
         end
+        total_growth === nothing || (ell_rates .= fix_total_growth(ell_rates, w_seg, total_growth, t))
     end
     function extf!(F, xx)
         add_wall_forces!(F, xx, nw, W, W1)

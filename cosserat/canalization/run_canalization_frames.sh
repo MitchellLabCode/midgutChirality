@@ -15,12 +15,14 @@ module load matlab/2023a
 cd "$SLURM_SUBMIT_DIR" || exit 1
 
 # the writhe panel reads this; produce it with precompute_writhe.py first
-WR=202609022_canalization_box2f_s6s1/wr_vs_len.mat
+# usage: sbatch run_canalization_frames.sh [sweep folder]   (default 20261110_canalization_box3f_s6s3_Lnorm)
+FOLDER=${1:-20261110_canalization_box3f_s6s3_Lnorm}
+WR=$FOLDER/wr_vs_len.mat
 if [ ! -f "$WR" ]; then
-    echo "missing $WR -- run: python precompute_writhe.py 202609022_canalization_box2f_s6s1"
+    echo "missing $WR -- run: python precompute_writhe.py $FOLDER"
     exit 1
 fi
 
 # -batch: no desktop, exits with a nonzero code if the script errors.
 # -softwareopengl: the nodes have no display; gouraud lighting needs OpenGL.
-matlab -softwareopengl -batch "plot_canalization_frames"
+matlab -softwareopengl -batch "folder_override = \"$FOLDER\"; plot_canalization_frames"

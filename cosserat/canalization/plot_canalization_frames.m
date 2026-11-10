@@ -12,18 +12,22 @@
 % Writhe comes from precompute_writhe.py (formula of ../src/measurements.py,
 % verified against measurements.compute_wr), which also flags the run with a
 % writhe discontinuity. Run that first:
-%     python precompute_writhe.py 202609022_canalization_box2f_s6s1
+%     python precompute_writhe.py 20261110_canalization_box3f_s6s3_Lnorm
 %
-% Colours: alpha = 1 - 2*tau on vik_r over [-1.2, 1.2].
+% alpha = 2*tau - 1: alpha < 0 at the WT end (tau = 0), blue; colours: alpha on vik over [-1.2, 1.2].
 % Positions are in units of the initial length (L0 = 1), as in the simulation.
 %
-% Output: <folder>/frames_wr/frame_NNN.png. Run from canalization/.
+% Output: <folder>/<out_subdir>/frame_NNN.png. Run from canalization/ (or sbatch run_canalization_frames.sh <folder>).
+% Set folder_override for another sweep, frames_only = [1 50] to render only some frames.
 
 addpath(".")
 
 % ======================= CONFIG ============================================
-folder_name = '202609022_canalization_box2f_s6s1';
-alpha_show  = [1, 0.5, 0, -0.5, -1];   % snapped to the nearest available run
+folder_name = '20261110_canalization_box3f_s6s3_Lnorm';
+if exist('folder_override', 'var') && strlength(folder_override) > 0
+    folder_name = char(folder_override);
+end
+alpha_show  = [-1, -0.5, 0, 0.5, 1];   % snapped to the nearest available run
 
 views = {'ventral', 'side'};
 
@@ -41,6 +45,9 @@ wr_lw     = 2.5;                 % writhe curve width
 wr_xticks = [-0.5 0 0.5];
 fig_px    = [1700 700];          % fixed pixel size -> every PNG identical size
 save_dpi  = '-r150';
+movie_title = 'Starting from initial shapes interpolating between WT and Inverted midguts leads to canalized outcomes';
+title_fs    = 15;                  % pt, bold
+out_subdir  = 'frames_wr';
 
 % ---- layout, normalized figure units ----
 % The tube axes are sized to their content: daspect is 1:1 and the rods are
@@ -54,7 +61,7 @@ wr_pos      = [0.69 0.10 0.28 0.72];   % writhe panel (inner position)
 % ===========================================================================
 
 W = load(fullfile(folder_name, 'wr_vs_len.mat'));
-alpha    = W.alpha(:);
+alpha    = 2*W.tau(:) - 1;      % from tau (wr_vs_len.mat files made before 2026-11-09 store 1-2tau)
 wr       = W.wr;                 % n_runs x n_frames
 lr       = W.len_ratio;          % n_runs x n_frames, L/L0
 snap_idx = W.snap_idx(:)';       % 1-based snapshot of each frame
@@ -64,8 +71,8 @@ n_frames = numel(snap_idx);
 
 vik = load('vik.mat').vik;
 nv  = size(vik, 1);
-% Normalize(-1.2, 1.2) on vik_r, i.e. vik read backwards
-col_of = @(a) vik(1 + round((1 - (min(max(a,-1.2),1.2) + 1.2)/2.4) * (nv-1)), :);
+% Normalize(-1.2, 1.2) on vik: alpha = -1 blue, +1 red
+col_of = @(a) vik(1 + round(((min(max(a,-1.2),1.2) + 1.2)/2.4) * (nv-1)), :);
 
 % ---- selected runs: snap to the nearest run that is NOT excluded ----------
 cand = find(~excluded);
@@ -134,7 +141,7 @@ wr_xlim = [min(wx(:)) max(wx(:))] + 0.05*range(wx(:))*[-1 1];
 wr_ylim = [min(wy(:)) max(wy(:))] + 0.03*range(wy(:))*[-1 1];
 [~, draw_order] = sort(alpha);              % draw curves in alpha order
 
-out_dir = fullfile(folder_name, 'frames_wr');
+out_dir = fullfile(folder_name, out_subdir);
 if ~isfolder(out_dir)
     mkdir(out_dir);
 end
@@ -142,7 +149,10 @@ end
 fig = figure('Units','pixels', 'Position',[10 10 fig_px], 'Color','w', ...
              'PaperPositionMode','auto', 'Visible','off');
 
-for f = 1:n_frames
+if ~exist('frames_only', 'var') || isempty(frames_only)
+    frames_only = 1:n_frames;
+end
+for f = frames_only(:)'
     s = snap_idx(f);
     clf(fig);
 
@@ -205,12 +215,15 @@ for f = 1:n_frames
     ylabel(ax, 'Length L/L_0');
     axis(ax, 'square');
 
-    sgtitle(fig, sprintf('%s   snapshot %d / %d   median L/L_0 = %.2f', ...
-            strrep(folder_name,'_','\_'), s, size(X{1},1), median(lr(keep,f))), ...
-            'FontSize',10);
+    annotation(fig, 'textbox', [0 0.935 1 0.06], 'String', movie_title, 'EdgeColor','none', ...
+               'HorizontalAlignment','center', 'VerticalAlignment','middle', ...
+               'FontSize',title_fs, 'FontWeight','bold', 'Interpreter','none');
+    annotation(fig, 'textbox', [0 0.895 1 0.04], 'String', ...
+               sprintf('median L/L_0 = %.2f', median(lr(keep,f))), 'EdgeColor','none', ...
+               'HorizontalAlignment','center', 'VerticalAlignment','middle', 'FontSize',11);
 
     print(fig, fullfile(out_dir, sprintf('frame_%03d.png', f)), '-dpng', save_dpi);
 end
 
 close(fig)
-fprintf('wrote %d frames to %s\n', n_frames, out_dir);
+fprintf('wrote %d frames to %s\n', numel(frames_only), out_dir);

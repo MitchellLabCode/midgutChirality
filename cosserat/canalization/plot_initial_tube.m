@@ -1,13 +1,7 @@
 
-% load reference mesh
-path_meshes = "../data/meshes_spRS/meshes_sample6.mat";
-path_data = "../data/refIV6_sample6_walls3_cball.mat";
-
-
+% reference data of sample 1: its length at t0 sets the micron scale of the plots
 path_meshes = "../data/meshes_spRS/meshes_sample1.mat";
 path_data = "../data/refIV6_sample1_walls3_cball.mat";
-%path_meshes = "../data/meshes_spRS/meshes_sample4.mat";
-%path_data = "../data/refIV6_sample4_walls3_cball.mat";
 
 meshes = load(path_meshes);
 meshes = meshes.meshes;
@@ -17,24 +11,18 @@ data_x = data.x;
 data_Q = data.Q;
 num_t = size(data_x, 1);
 
-
-
-
 % load simulation ouputs
 
-%folder_name = "20260209_Q_Tp_t45";
-%folder_name = "20260218_Q_twp_t54_s6V";
 t0 = 54;
-folder_name = "20260325_canalization_box2f_s6s3"; % with fixed posterior IC
-
-folder_name = "20260406_canalization_box2f_nocontact_notail_s6s1"; %
-
-folder_name = "20260402_canalization_box2f_s6s1"; %
-
+% sweep folder (output of canalization.jl); to plot another one without editing, set
+% folder_override before running the script
+folder_name = "20261110_canalization_box3f_s6s3_Lnorm";
+if exist('folder_override', 'var') && strlength(folder_override) > 0
+    folder_name = folder_override;
+end
 
 %path_sim = fullfile(folder_name, "cutoff01_T1.0_p0.3.mat");
 %sim_data = load(path_sim);
-
 
 % get maximal box
 xmin = 1e9;
@@ -71,7 +59,6 @@ for t = t0:num_t
         zmax = Mz;
     end
 end
-
 
 vik = load("vik.mat").vik;
 
@@ -159,7 +146,6 @@ for k = 1:2:length(mat_files)
     surf(xx,yy,zz, tau *ones(size(zz)), 'EdgeColor','none')
     clim([min(tau_values), max(tau_values)])
 
-
     %size(xsaves(end,:))
 
     %quiver3(squeeze(data_x(num_t,1:end-1,1))', squeeze(data_x(num_t,1:end-1,2))', squeeze(data_x(num_t,1:end-1,3))', squeeze(d1(:,1)), squeeze(d1(:,2)), squeeze(d1(:,3)),  'k-', 'linewidth', 2, 'AutoScale', 'on', 'AutoScaleFactor', 0.5)
@@ -183,7 +169,6 @@ for k = 1:2:length(mat_files)
 
     %view(0,-90) % ventral view    
 
-
     nexttile;
     %trisurf(triangulation(faces, verts), 'edgecolor', 'none', ...
     %        'facecolor', 0.9* [1, 1, 1], 'faceAlpha', 0.5);
@@ -201,7 +186,6 @@ for k = 1:2:length(mat_files)
 
     % quiver3(squeeze(data_x(num_t,1:end-1,1))', squeeze(data_x(num_t,1:end-1,2))', squeeze(data_x(num_t,1:end-1,3))', squeeze(d1(:,1)), squeeze(d1(:,2)), squeeze(d1(:,3)),  'k-', 'linewidth', 2, 'AutoScale', 'on', 'AutoScaleFactor', 0.5)
     % quiver3(squeeze(xsaves(end,1:end-1, 1)* L_t0)', squeeze(xsaves(end,1:end-1, 2)* L_t0)', squeeze(xsaves(end,1:end-1, 3)* L_t0)', squeeze(d1_sim(:,1)), squeeze(d1_sim(:,2)), squeeze(d1_sim(:,3)),'r-', 'linewidth', 2, 'AutoScale', 'on', 'AutoScaleFactor', 0.5)
-
 
     %axis([xmin, xmax, ymin, ymax, zmin, zmax])
     daspect([1,1,1])
