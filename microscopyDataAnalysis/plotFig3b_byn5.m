@@ -84,13 +84,17 @@ xticklabels(conditions);
 xtickangle(45);
 title('Midgut Chirality byn^5');
 ylabel('Fraction inverted');
-ylim([0, needed_ylim]);
+ylim([0, 1]);
 set(gca, 'YTick', [0, 0.25, 0.5, 0.75, 1.0]);
 set(gca, 'Box', 'off', 'TickDir', 'in', 'XColor', 'k');
 set(gcf, 'color', 'w');
 hold off;
 legend('inverted', 'abnormal', 'location', 'northwest');
 legend boxoff
+
+% Hide the interactive axes toolbar so it doesn't appear in exported files
+set(get(gca, 'Toolbar'), 'Visible', 'off');
+drawnow;
 
 saveas(gcf, './figure_midgutChirality_byn5.fig')
 exportgraphics(gcf, './figure_midgutChirality_byn5.png', 'Resolution', 400)
