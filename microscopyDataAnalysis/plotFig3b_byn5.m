@@ -92,10 +92,6 @@ hold off;
 legend('inverted', 'abnormal', 'location', 'northwest');
 legend boxoff
 
-% Hide the interactive axes toolbar so it doesn't appear in exported files
-set(get(gca, 'Toolbar'), 'Visible', 'off');
-drawnow;
-
 saveas(gcf, './figure_midgutChirality_byn5.fig')
 exportgraphics(gcf, './figure_midgutChirality_byn5.png', 'Resolution', 400)
 exportgraphics(gcf, './figure_midgutChirality_byn5.pdf', 'ContentType', 'vector')
