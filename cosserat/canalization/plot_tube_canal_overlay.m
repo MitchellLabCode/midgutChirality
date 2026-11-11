@@ -1,18 +1,21 @@
 % Overlay version of plot_tube_canal.m: final shapes of 4 runs, overlaid in
 % pairs with transparency. Columns: the two alpha < 0 runs, the two alpha > 0
 % runs. Rows: ventral and side views, on common axes so the panels compare.
-% alpha = 1 - 2*tau, as in plot_canalization_frames.m.
+% alpha = 2*tau - 1 (alpha < 0: the WT end, tau = 0), as in plot_canalization_frames.m.
 % Colours as in plot_tube_canal.m: tau on vik over [min tau, max tau]
-% (= alpha on vik_r over [-1.2, 1.2]).
+% (= alpha on vik over [-1.2, 1.2]).
 
 % load reference data (for the length scale L_t0 only)
 path_data = "../data/refIV6_sample1_walls3_cball.mat";
-%path_data = "../data/refIV6_sample6_walls3_cball.mat";
 data = load(path_data);
 data_x = data.x;
 t0 = 54;
-
-folder_name = "202609022_canalization_box2f_s6s1";
+% sweep folder (output of canalization.jl); to plot another one without editing, set
+% folder_override before running the script
+folder_name = "20261110_canalization_box3f_s6s3_Lnorm";
+if exist('folder_override', 'var') && strlength(folder_override) > 0
+    folder_name = folder_override;
+end
 
 alpha_pairs = {[-1, -0.5], [0.5, 1]};   % one panel per pair (snapped to the nearest run)
 face_alpha  = 0.55;                      % transparency of the overlaid tubes
@@ -47,7 +50,7 @@ tau_values = tau_values(valid_idx);
 mat_files = mat_files(sort_idx);
 n_values = n_values(sort_idx);
 tau_values = tau_values(sort_idx);
-alpha_values = 1 - 2*tau_values;
+alpha_values = 2*tau_values - 1;
 
 % colour of a run, as given by the surf CData = tau and clim below (for the titles)
 tmin = min(tau_values); tmax = max(tau_values); nv = size(vik, 1);

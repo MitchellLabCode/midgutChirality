@@ -7,7 +7,7 @@ method 1a, with NaN pair contributions set to 0), vectorized over segment pairs.
 
 Conventions:
     tau     parsed from the filename (cutoff01contact_n<k>_tau<tau>.mat)
-    alpha   = 1 - 2*tau
+    alpha   = 2*tau - 1   (alpha = -1: tau = 0, the WT end; +1: tau = 1)
     Wr      every `stride`-th snapshot (default 4)
     L/L0    summed edge length; positions are in units of the initial length
 
@@ -15,7 +15,7 @@ Also flags the run with an outlying jump in Wr(t) (max |dWr| between
 consecutive samples, compared with the median over runs) so it can be left out
 of the writhe panel.
 
-    python precompute_writhe.py 202609022_canalization_box2f_s6s1 [--verify]
+    python precompute_writhe.py 20261110_canalization_box3f_s6s3_Lnorm [--verify]
 """
 
 import os
@@ -75,11 +75,19 @@ def main(folder, stride=4, verify=False, jump_factor=5.0):
     wr = np.array(wr)[order]
     ln = np.array(ln)[order]
     files = [files[k] for k in order]
-    alpha = 1 - 2 * tau
+    alpha = 2 * tau - 1
 
     jump = np.abs(np.diff(wr, axis=1)).max(axis=1)
     med = np.median(jump)
-    excluded = jump > jump_factor * med
+    # a step of ~2 in Wr between samples is a self-passage (the rod crossing itself); the relative test
+    # alone misses them when most runs of a sweep have one, so any step > 1 is flagged as well
+    excluded = (jump > jump_factor * med) | (jump > 1.0)
+    # also runs with corrupt snapshots: non-finite values, or a length well above the final one
+    badlen = ~np.isfinite(wr).all(axis=1) | ~np.isfinite(ln).all(axis=1) | (np.nanmax(ln, axis=1) > 1.5 * ln[:, -1])
+    if badlen.any():
+        print(f"  {badlen.sum()} runs with corrupt snapshots (length > 1.5x final or non-finite), excluded: alpha = "
+              + ", ".join(f"{v:+.3f}" for v in alpha[badlen]))
+    excluded = excluded | badlen
     snap_idx = np.arange(0, wr.shape[1]) * stride + 1        # 1-based, for MATLAB
 
     print(f"{folder}: {len(files)} runs, {wr.shape[1]} samples each "
@@ -100,5 +108,5 @@ def main(folder, stride=4, verify=False, jump_factor=5.0):
 
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    main(args[0] if args else "202609022_canalization_box2f_s6s1",
+    main(args[0] if args else "20261110_canalization_box3f_s6s3_Lnorm",
          verify="--verify" in sys.argv)
