@@ -67,6 +67,7 @@ P.out_fig2       = fullfile(here, 'Fig2', 'output');
 P.figshare_fig1  = fullfile(here, 'Fig1', 'data_figshare_fig1');
 P.figshare_fig2  = fullfile(here, 'Fig2', 'data_figshare_fig2');
 P.bounding_contact = fullfile(here, '..', 'cosserat', 'data');    % refIV6_sample<N>_walls3_cball.mat
+P.canalization   = fullfile(here, '..', 'cosserat', 'canalization');  % SRVbox3f_s<WT>s<Myo>/ (prep_interp_data)
 
 %%% constants
 P.dt = 2;                 % frame interval [min]

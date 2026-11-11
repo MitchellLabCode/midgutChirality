@@ -36,13 +36,26 @@ exported PDFs can come out garbled. Use a (virtual) X display, e.g.
 | 3 | `data_generation/process_all_V6.m` | centerlines, stripes, folds, meshes | `P.framesV6` = `all_framesInterpV6_10samples.mat` |
 | 4 | `timeAlign/timelag_fromRadii.m` | TubULAR radii and folds | `timeAlign/timeshifts_fromRadiusKymos_10samples.mat` (tracked) |
 | 5 | `bounding_contact/generate_bounding_contact.m` | `P.framesV6` | walls and contact radius for the simulations, `../cosserat/data/refIV6_sample<N>_walls3_cball.mat`, plus heatmaps |
-| 6 | `Fig1/*`, `Fig2/*` | `P.framesV6`, time shifts | figures, movies, figshare data |
+| 6 | `canalization/prep_interp_data.m` | step 5 reference files of samples 6 and 3, start shapes `../cosserat/prod/x0_*.mat` | inputs of the canalization runs, `../cosserat/canalization/SRVbox3f_s6s3/` |
+| 7 | `Fig1/*`, `Fig2/*` | `P.framesV6`, time shifts | figures, movies, figshare data |
 
 Steps 1 to 4 need the raw data and TubULAR. Step 1 is interactive (drawing on
 the pullbacks), but already-traced stripes are reused, so rerunning it only
 re-embeds them. The dataset (`all_framesInterpV6_10samples.mat`) and the
 figshare files are distributed separately; the dataset's structure is described
 in [`Fig1/figshare_readme.txt`](Fig1/figshare_readme.txt).
+
+### Canalization inputs
+`canalization/prep_interp_data.m` interpolates between a WT and a byn>Myo1C
+embryo (samples 6 and 3) at 50 values of tau from −0.1 to 1.1 (Fig. S15), over
+the frames both embryos share from aligned frame 19 on. For each tau it writes
+the centerlines (`SRVinterpolation.m` plus the linear blend of the two curves),
+the frames (`FrameInterpolation.m`: the byn>Myo1C frame is minimally rotated
+onto the WT tangent, the WT frame is rotated about that tangent by tau times the
+angle between them, and the result is minimally rotated onto the interpolated
+tangent, so every frame is a rotation), the blended contact radius, and the
+interpolated start shape `x0`. The walls are one convex hull that contains
+every interpolated centerline and start shape, the same for every tau.
 
 ### Fig. 1
 - `fig1_chirality_10samples.m`: for all embryos, 3D renders coloured by the

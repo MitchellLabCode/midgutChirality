@@ -40,6 +40,7 @@ cosserat/
 │   ├── run_canalization.sh    #   SLURM launcher (12 workers); validate_fast.sh: fast vs reference solver
 │   ├── SRVbox3f_s6s3/         #   inputs: 50 interpolated time series (tau = -0.1 .. 1.1), start shapes,
 │   │                          #   circumradii, and walls containing every interpolated shape
+│   │                          #   (made by ../processing/canalization/prep_interp_data.m)
 │   ├── precompute_writhe.py   #   Wr vs L/L0 of a sweep -> <folder>/wr_vs_len.mat (flags self-passages)
 │   ├── plot_wr_vs_len.py      #   Wr vs length of every run
 │   ├── canal_pca.py           #   PCA / MDS / t-SNE of curvature and Q-measure profiles; run_canal_embed.sh
