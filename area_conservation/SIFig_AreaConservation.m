@@ -19,7 +19,6 @@
 %   relative_shifts entry in shiftsFile, plus cross_genotype_shift for
 %   bynMyo1c, so WT and bynMyo1c share one timeline:
 %     aligned timepoint = timepoint + shiftSign * lag
-%   See alignedT0.m for more. 
 %
 % Surface area and volume
 %   Each specimen's surface area and volume are divided by their value at
@@ -167,7 +166,7 @@ end
 styles = {'labeled', 'ticks', 'bare'};   % every figure is saved in these three versions
 
 %% -------------------------------------------------------------------------
-%  Time alignment: every dataset's lag, and t = 0 (as in alignedT0.m)
+%  Time alignment: every dataset's lag, and t = 0 
 % --------------------------------------------------------------------------
 TL = alignedTimeline(load(shiftsFile), shiftSign);
 fprintf(['\nt = 0 is aligned timepoint %g, the first at which all %d datasets in the ' ...
@@ -532,7 +531,7 @@ end
 
 function TL = alignedTimeline(S, shiftSign)
 % alignedTimeline  The shared aligned timeline of every dataset in the
-% shifts file, built as in alignedT0.m. Each dataset's lag onto the WT
+% shifts file. Each dataset's lag onto the WT
 % reference's timeline is its relative_shifts entry (empty or NaN for the
 % reference, i.e. 0), plus cross_genotype_shift for bynMyo1c. t = 0 is the
 % first aligned timepoint at which every dataset has data: the latest
@@ -589,7 +588,7 @@ function t0 = datasetT0(TL, k, shiftSign)
 % its timepoint that lands at t = 0, the first aligned timepoint at which
 % every dataset in the shifts file has data,
 %   t0 = alignedTimepointAtZero - shiftSign * lag,
-% rounded to a whole timepoint as alignedT0.m does when the lags are not
+% rounded to a whole timepoint when the lags are not
 % whole numbers. Whether the dataset has data at t0 is up to the caller.
 atZero = max(TL.firsts + shiftSign * TL.lags);
 t0 = round(atZero - shiftSign * TL.lags(k));
